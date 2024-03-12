@@ -1,3 +1,55 @@
 /* styles.css */
 
 /* Add styles here to customize the appearance of your app */
+
+*{
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    list-style: none;
+}
+.container{
+    height: 100vh;
+    display: flex;
+    background-color: #161823;
+}
+.left{
+    width: 150px;
+    border-right: 1px solid white;
+    color: rgb(255 255 255 / 50%);
+}
+.left> li{
+    padding: 10px;
+    cursor: pointer;
+    &:hover{
+        background-color: rgb(242 242 243 / 12%);
+        color: rgb(255 255 255);
+    }
+    &.active{
+        background-color: rgb(242 242 243 / 12%);
+        color: rgb(255 255 255);
+    }
+}
+.main{
+    flex: 1;
+    display: grid;
+    gap: 20px;
+    justify-content: space-evenly;
+    grid-template-columns: repeat(auto-fill,252px);
+    overflow-y: auto;
+}
+.main> li{
+    >img{
+        width: 252px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 2px solid transparent;
+    }
+    &:hover img{
+        border-color: blueviolet;
+    }
+    &.active img{
+        border-color: cadetblue;
+    }
+}
