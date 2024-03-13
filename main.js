@@ -2,7 +2,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('node:path')
 
-let wallpaper_data=loadWallpaperData()
+let wallpaper_data=loadData()
 ipcMain.handle('getWallpapers',()=>wallpaper_data)
 
 function createWindow () {
@@ -45,8 +45,8 @@ app.on('window-all-closed', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-async function loadWallpaperData(){
-  let url='https://www.douyin.com/aweme/v1/web/wallpaper/item/?cookie_enabled=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=104.0.5112.102&browser_online=true&engine_name=Blink&engine_version=104.0.5112.102&os_name=Windows&os_version=10&cpu_core_num=6&device_memory=8&platform=PC&downlink=9.7&effective_type=4g&round_trip_time=0&device_platform=webapp&aid=6383&channel=channel_pc_web&count=20&cursor=0&version=2&need_aweme_image=true&tag_id=0&sort_type=1&show_type=0'
+async function loadWallpaperData(cursur=0){
+  let url=`https://www.douyin.com/aweme/v1/web/wallpaper/item/?cookie_enabled=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=104.0.5112.102&browser_online=true&engine_name=Blink&engine_version=104.0.5112.102&os_name=Windows&os_version=10&cpu_core_num=6&device_memory=8&platform=PC&downlink=9.7&effective_type=4g&round_trip_time=0&device_platform=webapp&aid=6383&channel=channel_pc_web&count=20&cursor=${cursur}&version=2&need_aweme_image=true&tag_id=0&sort_type=1&show_type=0`
   let res=await fetch(url,{referrer:'https://www.douyin.com'})
   let data=await res.json()
   let tag_list=data.tag_list
@@ -65,4 +65,14 @@ async function loadWallpaperData(){
     return obj
   })
   return {tag_list,list}
+}
+
+async function loadData(){
+  let obj={}
+  let res1=await loadWallpaperData()
+  let res2=await loadWallpaperData(20)
+  let res3=await loadWallpaperData(40)
+  obj.tag_list=res1.tag_list
+  obj.list=[...res1.list,...res2.list,...res3.list]
+  return obj
 }

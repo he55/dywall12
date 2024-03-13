@@ -20,9 +20,22 @@ async function loadData(){
         }
         left_ul.appendChild(li)
     })
+
     let main_li=document.querySelector('.main')
     wallpaper_list.forEach((item,idx)=>{
         let li=document.createElement('li')
+        li.onmouseenter=function(){
+            if(item.type===1){
+                this.innerHTML=`<video autoplay loop><source src=${item.res}></video>`
+            }
+            console.log('mouseenter',item.res)
+        }
+        li.onmouseleave=function(){
+            if(item.type===1){
+                this.innerHTML=`<img src="${item.img}">`
+            }
+            console.log('mouseleave')
+        }
         if(idx===5){
             li.className='active'
         }
