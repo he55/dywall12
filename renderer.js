@@ -24,6 +24,7 @@ async function loadData() {
     let main_li = document.querySelector('.main')
     wallpaper_list.forEach((item, idx) => {
         let li = document.createElement('li')
+        li.innerHTML=`<img src=${item.img}>`
         if (item.type === 1) {
             function mouseenter() {
                 li.onmouseenter = null
@@ -31,7 +32,7 @@ async function loadData() {
                 console.log('mouseenter', item.res)
 
                 li.onmouseleave = function () {
-                    this.innerHTML = `<img src="${item.img}">`
+                    this.innerHTML=`<img src=${item.img}>`
                     console.log('mouseleave')
                     li.onmouseenter = mouseenter
                 }
@@ -42,9 +43,6 @@ async function loadData() {
         if (idx === 5) {
             li.className = 'active'
         }
-        let img = new Image()
-        img.src = item.img
-        li.appendChild(img)
         main_li.appendChild(li)
     })
 
