@@ -9,8 +9,11 @@ const { contextBridge, ipcRenderer } = require("electron");
  * https://www.electronjs.org/docs/latest/tutorial/sandbox
  */
 
-contextBridge.exposeInMainWorld('ipc',{
-  getWallpapers(){
+contextBridge.exposeInMainWorld('ipc', {
+  getWallpapers() {
     return ipcRenderer.invoke('getWallpapers')
+  },
+  setWallpaper(obj) {
+    ipcRenderer.send('set-wallpaper', obj)
   }
 })
