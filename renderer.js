@@ -31,7 +31,7 @@ async function loadData() {
         if (item.type === 1) {
             function mouseenter() {
                 li.onmouseenter = null
-                this.innerHTML = `<video loop autoplay muted><source src=${item.res}></video>`
+                this.innerHTML = `<video src=${item.res} loop autoplay muted></video>`
                 console.log('mouseenter', item.res)
 
                 li.onmouseleave = function () {

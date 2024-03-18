@@ -5,6 +5,6 @@ ipcRenderer.on('set-wallpaper', (event, obj) => {
     if (obj.type === 0) {
         container.innerHTML = `<img src=${obj.res}>`
     } else {
-        container.innerHTML = `<video loop autoplay><source src=${obj.res}></video>`
+        container.innerHTML = `<video src=${obj.res} loop autoplay></video>`
     }
 })

@@ -7,6 +7,9 @@ let videoWindow
 let wallpaper_data = loadData()
 ipcMain.handle('getWallpapers', () => wallpaper_data)
 ipcMain.on('set-wallpaper', (event, obj) => {
+  if(!videoWindow){
+    createVideoWindow()
+  }
   videoWindow.webContents.send('set-wallpaper', obj)
 })
 
@@ -38,6 +41,9 @@ function createVideoWindow() {
       preload: path.join(__dirname, 'preload2.js')
     }
   })
+  videoWindow.once('closed',()=>{
+    videoWindow=null
+  })
 
   videoWindow.loadFile('video.html')
 }
@@ -47,7 +53,6 @@ function createVideoWindow() {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow()
-  createVideoWindow()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
