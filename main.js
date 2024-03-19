@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('node:path')
+const {attach,refresh}=require('electron-as-wallpaper')
 
 /** @type {BrowserWindow} */
 let videoWindow
@@ -36,13 +37,18 @@ function createVideoWindow() {
     y: 50,
     width: 800,
     height: 500,
+    fullscreen:true,
+    backgroundColor:'#161823',
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload2.js')
     }
   })
+  attach(videoWindow)
+
   videoWindow.once('closed',()=>{
     videoWindow=null
+    refresh()
   })
 
   videoWindow.loadFile('video.html')
