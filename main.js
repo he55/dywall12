@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, Tray, Menu } = require('electron')
 const path = require('node:path')
 const {attach,refresh}=require('electron-as-wallpaper')
 
@@ -54,10 +54,25 @@ function createVideoWindow() {
   videoWindow.loadFile('video.html')
 }
 
+function createTray(){
+  let tray=new Tray(path.join(__dirname,'icon_mac_tray@2x.png'))
+  const contextMenu=Menu.buildFromTemplate([
+    {label:'Close Wallpaper',click:()=>{
+      videoWindow?.close()
+    }},
+    {label:'Exit',click:()=>{
+      app.exit()
+    }}
+  ])
+  tray.setToolTip('Wallpaper')
+  tray.setContextMenu(contextMenu)
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  createTray()
   createWindow()
 
   app.on('activate', function () {
