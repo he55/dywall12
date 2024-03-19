@@ -4,7 +4,10 @@ const path = require('node:path')
 const {attach,refresh}=require('electron-as-wallpaper')
 
 /** @type {BrowserWindow} */
+let mainWindow
+/** @type {BrowserWindow} */
 let videoWindow
+
 let wallpaper_data = loadData()
 ipcMain.handle('getWallpapers', () => wallpaper_data)
 ipcMain.on('set-wallpaper', (event, obj) => {
@@ -16,12 +19,16 @@ ipcMain.on('set-wallpaper', (event, obj) => {
 
 function createWindow() {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
+  })
+  mainWindow.on('close',(event)=>{
+    event.preventDefault()
+    mainWindow.hide()
   })
 
   // and load the index.html of the app.
@@ -57,6 +64,12 @@ function createVideoWindow() {
 function createTray(){
   let tray=new Tray(path.join(__dirname,'icon_mac_tray@2x.png'))
   const contextMenu=Menu.buildFromTemplate([
+    {label:'Wallpaper',enabled:false},
+    {label:'Show',click:()=>{
+      if(!mainWindow.isVisible()){
+        mainWindow.show()
+      }
+    }},
     {label:'Close Wallpaper',click:()=>{
       videoWindow?.close()
     }},
