@@ -79,11 +79,14 @@ function createTray(){
   ])
   tray.setToolTip('Wallpaper')
   tray.setContextMenu(contextMenu)
-  tray.on('click',()=>{
-    if(!mainWindow.isVisible()){
-      mainWindow.show()
-    }
-  })
+
+  if(process.platform==='win32'){
+    tray.on('click',()=>{
+      if(!mainWindow.isVisible()){
+        mainWindow.show()
+      }
+    })
+  }
 }
 
 // This method will be called when Electron has finished
