@@ -6,6 +6,55 @@
  * to expose Node.js functionality from the main process.
  */
 
+const { createApp, ref,toRaw } = Vue
+
+window.addEventListener('DOMContentLoaded',async()=>{
+    let data = await ipc.getWallpapers()
+   
+    let lastMenu
+    function menuClick(item){
+        if(lastMenu){
+            lastMenu.isActive=false
+        }
+        lastMenu=item
+        item.isActive=true
+    }
+
+    let lastVideo
+    function videoClick(item){
+        if(lastVideo){
+            lastVideo.isActive=false
+        }
+        lastVideo=item
+        item.isActive=true
+
+        ipc.setWallpaper(toRaw(item))
+    }
+    function videoMouseenter(item){
+        item.isHover=true
+        console.log('mouseenter')
+    }
+    function videoMouseLeave(item){
+        item.isHover=false
+        console.log('mouseleave')
+    }
+    createApp({
+      setup() {
+        const categories=ref(data.tag_list)
+        const videos=ref(data.list)
+        return {
+            categories,
+            videos,
+            menuClick,
+            videoClick,
+            videoMouseenter,
+            videoMouseLeave,
+        }
+      }
+    }).mount('#app')
+})
+
+
 async function loadData() {
     let data = await ipc.getWallpapers()
     let tag_list = data.tag_list
@@ -51,4 +100,4 @@ async function loadData() {
 
     console.log(data)
 }
-loadData()
+// loadData()
