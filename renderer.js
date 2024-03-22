@@ -6,7 +6,7 @@
  * to expose Node.js functionality from the main process.
  */
 
-const { createApp, ref, toRaw } = Vue
+const { createApp, ref, toRaw,onMounted } = Vue
 
 window.addEventListener('DOMContentLoaded', async () => {
     let tag_list = await ipc.loadTagList()
@@ -46,6 +46,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
     createApp({
         setup() {
+            onMounted(async()=>{
+               await menuClick(tag_list[0])
+            })
             const categories = ref(tag_list)
             return {
                 ulElement,
