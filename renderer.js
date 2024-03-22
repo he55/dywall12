@@ -6,50 +6,56 @@
  * to expose Node.js functionality from the main process.
  */
 
-const { createApp, ref,toRaw } = Vue
+const { createApp, ref, toRaw } = Vue
 
-window.addEventListener('DOMContentLoaded',async()=>{
-    let data = await ipc.getWallpapers()
-   
+window.addEventListener('DOMContentLoaded', async () => {
+    let tag_list = await ipc.loadTagList()
+    const videos = ref([])
+    const ulElement=ref(null)
+
     let lastMenu
-    function menuClick(item){
-        if(lastMenu){
-            lastMenu.isActive=false
+    async function menuClick(item) {
+        if (lastMenu) {
+            lastMenu.isActive = false
         }
-        lastMenu=item
-        item.isActive=true
+        lastMenu = item
+        item.isActive = true
+
+        let list = await ipc.loadWallpaperData(item.tag_id,0)
+        videos.value = list
+        ulElement.value.scrollTop=0
     }
 
     let lastVideo
-    function videoClick(item){
-        if(lastVideo){
-            lastVideo.isActive=false
+    function videoClick(item) {
+        if (lastVideo) {
+            lastVideo.isActive = false
         }
-        lastVideo=item
-        item.isActive=true
+        lastVideo = item
+        item.isActive = true
 
         ipc.setWallpaper(toRaw(item))
     }
-    function videoMouseenter(item){
-        item.isHover=true
+    function videoMouseenter(item) {
+        item.isHover = true
         console.log('mouseenter')
     }
-    function videoMouseLeave(item){
-        item.isHover=false
+    function videoMouseLeave(item) {
+        item.isHover = false
         console.log('mouseleave')
     }
     createApp({
-      setup() {
-        const categories=ref(data.tag_list)
-        const videos=ref(data.list)
-        return {
-            categories,
-            videos,
-            menuClick,
-            videoClick,
-            videoMouseenter,
-            videoMouseLeave,
+        setup() {
+            const categories = ref(tag_list)
+            return {
+                ulElement,
+                categories,
+                videos,
+                menuClick,
+                videoClick,
+                videoMouseenter,
+                videoMouseLeave,
+            }
         }
-      }
     }).mount('#app')
 })

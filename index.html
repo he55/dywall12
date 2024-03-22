@@ -13,7 +13,7 @@
       <ul class="left">
         <li v-for="category in categories" :class="{active:category.isActive}" @click="menuClick(category)">{{category.tag_name}}</li>
       </ul>
-      <ul class="main">
+      <ul class="main" ref="ulElement">
         <li v-for="video in videos" :class="{active:video.isActive}" @click="videoClick(video)" @mouseenter="videoMouseenter(video)" @mouseleave="videoMouseLeave(video)">
           <video v-if="video.type===1&&video.isHover" :src="video.res" autoplay loop muted ></video>
           <img v-else :src="video.img" alt="">

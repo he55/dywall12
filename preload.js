@@ -10,8 +10,11 @@ const { contextBridge, ipcRenderer } = require("electron");
  */
 
 contextBridge.exposeInMainWorld('ipc', {
-  getWallpapers() {
-    return ipcRenderer.invoke('getWallpapers')
+  loadWallpaperData(id,cursor) {
+    return ipcRenderer.invoke('load-wallpaper-data',id,cursor)
+  },
+  loadTagList(){
+    return ipcRenderer.invoke('load-tag-list')
   },
   setWallpaper(obj) {
     ipcRenderer.send('set-wallpaper', obj)
