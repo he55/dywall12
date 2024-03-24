@@ -3,7 +3,13 @@ const { app, BrowserWindow, ipcMain, Tray, Menu } = require('electron')
 const path = require('node:path')
 const fs=require('fs')
 const { attach, refresh } = require('electron-as-wallpaper')
-const {download}=require('electron-dl')
+const { finished } = require('node:stream/promises')
+const { Readable } = require('node:stream')
+
+const wallpaperPath=path.join(app.getPath('sessionData'),'wallpaper')
+if(!fs.existsSync(wallpaperPath)){
+  fs.mkdirSync(wallpaperPath)
+}
 
 /** @type {BrowserWindow} */
 let mainWindow
@@ -158,22 +164,21 @@ async function loadWallpaperData(id, cursor = 0) {
   return list
 }
 
-const wallpaperPath=path.join(app.getPath('sessionData'),'wallpaper')
-if(!fs.existsSync(wallpaperPath)){
-  fs.mkdirSync(wallpaperPath)
-}
-
-
 async function cacheImage(list){
   for (const item of list) {
     const filename=path.join(wallpaperPath,item.aweme_id+'.jpeg')
-    if(fs.existsSync(filename)){
-      continue
-    }
-    try {
-    await download(mainWindow,item.img,{showProgressBar:false,directory:wallpaperPath,filename:item.aweme_id+'.jpeg'})
-    } catch (error) {
-      console.log(error)
+    if(!fs.existsSync(filename)){
+      try {
+        await download_file(item.img,filename)
+      } catch (error) {
+        console.log('download_file', error)
+      }
     }
   }
+}
+
+async function download_file(url,path){
+  const res=await fetch(url)
+  const stream=fs.createWriteStream(path)
+  await finished(Readable.fromWeb(res.body).pipe(stream))
 }
