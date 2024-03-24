@@ -1,7 +1,9 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain, Tray, Menu } = require('electron')
 const path = require('node:path')
+const fs=require('fs')
 const { attach, refresh } = require('electron-as-wallpaper')
+const {download}=require('electron-dl')
 
 /** @type {BrowserWindow} */
 let mainWindow
@@ -134,9 +136,15 @@ async function loadWallpaperData(id, cursor = 0) {
   let data = await res.json()
   let list = data.wallpaper_list.map(item => {
     let obj = {
+      aweme_id:item.aweme.aweme_id,
       desc: item.aweme.desc,
       img: item.aweme.video.cover.url_list[0],
     }
+    const filename=path.join(wallpaperPath,obj.aweme_id+'.jpeg')
+    if(fs.existsSync(filename)){
+      obj.img=filename
+    }
+
     if (item.aweme.images) {
       obj.type = 0
       obj.res = item.aweme.images[0].download_url_list[0]
@@ -146,5 +154,26 @@ async function loadWallpaperData(id, cursor = 0) {
     }
     return obj
   })
+  cacheImage(list)
   return list
+}
+
+const wallpaperPath=path.join(app.getPath('sessionData'),'wallpaper')
+if(!fs.existsSync(wallpaperPath)){
+  fs.mkdirSync(wallpaperPath)
+}
+
+
+async function cacheImage(list){
+  for (const item of list) {
+    const filename=path.join(wallpaperPath,item.aweme_id+'.jpeg')
+    if(fs.existsSync(filename)){
+      continue
+    }
+    try {
+    await download(mainWindow,item.img,{showProgressBar:false,directory:wallpaperPath,filename:item.aweme_id+'.jpeg'})
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }
