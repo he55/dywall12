@@ -6,24 +6,40 @@
  * to expose Node.js functionality from the main process.
  */
 
-const { createApp, ref, toRaw,onMounted } = Vue
+const { createApp, ref, toRaw, onMounted } = Vue
 
 window.addEventListener('DOMContentLoaded', async () => {
     let tag_list = await ipc.loadTagList()
     const videos = ref([])
-    const ulElement=ref(null)
+    const ulElement = ref(null)
 
     let lastMenu
     async function menuClick(item) {
         if (lastMenu) {
             lastMenu.isActive = false
         }
-        lastMenu = item
         item.isActive = true
 
-        let list = await ipc.loadWallpaperData(item.tag_id,0)
-        videos.value = list
-        ulElement.value.scrollTop=0
+        if (!item.data) {
+            item.data = []
+        }
+
+        if (item !== lastMenu) {
+            videos.value = item.data
+            ulElement.value.scrollTop = 0
+        }
+
+        try {
+            /** @type {[]} */
+            let list = await ipc.loadWallpaperData(item.tag_id, item.data.length)
+            list.forEach(element => {
+                item.data.push(element)
+            });
+        } catch (error) {
+            console.log('load fail')
+        }
+
+        lastMenu = item
     }
 
     let lastVideo
@@ -46,8 +62,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
     createApp({
         setup() {
-            onMounted(async()=>{
-               await menuClick(tag_list[0])
+            onMounted(async () => {
+                await menuClick(tag_list[0])
             })
             const categories = ref(tag_list)
             return {
