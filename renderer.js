@@ -24,11 +24,6 @@ window.addEventListener('DOMContentLoaded', async () => {
             item.data = []
         }
 
-        if (item !== lastMenu) {
-            videos.value = item.data
-            ulElement.value.scrollTop = 0
-        }
-
         try {
             /** @type {[]} */
             let list = await ipc.loadWallpaperData(item.tag_id, item.data.length)
@@ -37,6 +32,11 @@ window.addEventListener('DOMContentLoaded', async () => {
             });
         } catch (error) {
             console.log('load fail')
+        }
+
+        if (item !== lastMenu) {
+            videos.value = item.data
+            ulElement.value.scrollTop = 0
         }
 
         lastMenu = item
