@@ -2,7 +2,7 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu } = require('electron')
 const path = require('node:path')
 const { attach, refresh } = require('electron-as-wallpaper')
-const {loadTagList,loadWallpaperData}=require('./helper')
+const {loadTagList,loadWallpaperData,download_wallpaper}=require('./helper')
 
 /** @type {BrowserWindow} */
 let mainWindow
@@ -17,6 +17,7 @@ ipcMain.on('set-wallpaper', (event, obj) => {
     createVideoWindow()
   }
   videoWindow.webContents.send('set-wallpaper', obj)
+  download_wallpaper(obj)
 })
 
 function createWindow() {

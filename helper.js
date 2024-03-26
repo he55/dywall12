@@ -4,7 +4,17 @@ const fs = require('fs')
 const { finished } = require('node:stream/promises')
 const { Readable } = require('node:stream')
 
-const wallpaperPath = path.join(app.getPath('sessionData'), 'wallpaper')
+const dataPath = path.join(app.getPath('sessionData'), 'data')
+if (!fs.existsSync(dataPath)) {
+  fs.mkdirSync(dataPath)
+}
+
+const cachePath = path.join(dataPath, 'cache')
+if (!fs.existsSync(cachePath)) {
+  fs.mkdirSync(cachePath)
+}
+
+const wallpaperPath = path.join(dataPath, 'wallpaper')
 if (!fs.existsSync(wallpaperPath)) {
   fs.mkdirSync(wallpaperPath)
 }
@@ -32,10 +42,6 @@ async function loadWallpaperData(id, cursor = 0) {
       desc: item.aweme.desc,
       img: item.aweme.video.cover.url_list[0],
     }
-    const filename = path.join(wallpaperPath, obj.aweme_id + '.jpeg')
-    if (fs.existsSync(filename)) {
-      obj.img = filename
-    }
 
     if (item.aweme.images) {
       obj.type = 0
@@ -44,6 +50,17 @@ async function loadWallpaperData(id, cursor = 0) {
       obj.type = 1
       obj.res = item.aweme.video.download_addr.url_list[0]
     }
+
+    const cachefile = path.join(cachePath, obj.aweme_id + '.jpeg')
+    if (fs.existsSync(cachefile)) {
+      obj.img = cachefile
+    }
+
+    const filepath = path.join(wallpaperPath, obj.aweme_id + (obj.type === 0 ? '.jpeg' : '.mp4'))
+    if (fs.existsSync(filepath)) {
+      obj.res = filepath
+    }
+
     return obj
   })
   cacheImage(list)
@@ -52,13 +69,14 @@ async function loadWallpaperData(id, cursor = 0) {
 
 async function cacheImage(list) {
   for (const item of list) {
-    const filename = path.join(wallpaperPath, item.aweme_id + '.jpeg')
-    if (!fs.existsSync(filename)) {
-      try {
-        await download_file(item.img, filename)
-      } catch (error) {
-        console.log('download_file', error)
-      }
+    const filename = path.join(cachePath, item.aweme_id + '.jpeg')
+    if (fs.existsSync(filename)) {
+      continue
+    }
+    try {
+      await download_file(item.img, filename)
+    } catch (error) {
+      console.error('cache image error', filename, error)
     }
   }
 }
@@ -69,7 +87,20 @@ async function download_file(url, path) {
   await finished(Readable.fromWeb(res.body).pipe(stream))
 }
 
-module.exports={
+async function download_wallpaper(item) {
+  const filepath = path.join(wallpaperPath, item.aweme_id + (item.type === 0 ? '.jpeg' : '.mp4'))
+  if (fs.existsSync(filepath)) {
+    return
+  }
+  try {
+    await download_file(item.res, filepath)
+  } catch (error) {
+    console.error('download wallpaper error', item.res, error)
+  }
+}
+
+module.exports = {
   loadTagList,
-  loadWallpaperData
+  loadWallpaperData,
+  download_wallpaper
 }
