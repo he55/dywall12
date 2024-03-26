@@ -133,6 +133,9 @@ async function loadTagList() {
   let url = `https://www.douyin.com/aweme/v1/web/wallpaper/item`
   let res = await fetch(url, { referrer: 'https://www.douyin.com' })
   let data = await res.json()
+  for (const item of data.tag_list) {
+    item.data=[]
+  }
   return data.tag_list
 }
 
@@ -140,6 +143,9 @@ async function loadWallpaperData(id, cursor = 0) {
   let url = `https://www.douyin.com/aweme/v1/web/wallpaper/item/?cookie_enabled=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=104.0.5112.102&browser_online=true&engine_name=Blink&engine_version=104.0.5112.102&os_name=Windows&os_version=10&cpu_core_num=6&device_memory=8&platform=PC&downlink=9.7&effective_type=4g&round_trip_time=0&device_platform=webapp&aid=6383&channel=channel_pc_web&count=20&cursor=${cursor}&version=2&need_aweme_image=true&tag_id=${id}&sort_type=1&show_type=0`
   let res = await fetch(url, { referrer: 'https://www.douyin.com' })
   let data = await res.json()
+  if(!data.wallpaper_list){
+    return []
+  }
   let list = data.wallpaper_list.map(item => {
     let obj = {
       aweme_id:item.aweme.aweme_id,

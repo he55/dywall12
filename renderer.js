@@ -20,10 +20,6 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
         item.isActive = true
 
-        if (!item.data) {
-            item.data = []
-        }
-
         try {
             /** @type {[]} */
             let list = await ipc.loadWallpaperData(item.tag_id, item.data.length)
