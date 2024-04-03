@@ -10,16 +10,18 @@ const { createApp, ref, toRaw, onMounted } = Vue
 
 window.addEventListener('DOMContentLoaded', async () => {
     let tag_list = await ipc.loadTagList()
+    const categories = ref(tag_list)
     const videos = ref([])
     const ulElement = ref(null)
+    const categoryIndex=ref(-1)
 
-    let lastMenu
-    async function menuClick(item) {
-        if (lastMenu) {
-            lastMenu.isActive = false
+    async function menuClick(index) {
+        const item=tag_list[index]
+        if (categoryIndex.value !== index) {
+            ulElement.value.scrollTop = 0
         }
-        item.isActive = true
-
+        categoryIndex.value=index
+    
         try {
             /** @type {[]} */
             let list = await ipc.loadWallpaperData(item.tag_id, item.data.length)
@@ -30,12 +32,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             console.log('load fail')
         }
 
-        if (item !== lastMenu) {
-            videos.value = item.data
-            ulElement.value.scrollTop = 0
-        }
-
-        lastMenu = item
+        videos.value = item.data
     }
 
     let lastVideo
@@ -59,12 +56,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     createApp({
         setup() {
             onMounted(async () => {
-                await menuClick(tag_list[0])
+                await menuClick(0)
             })
-            const categories = ref(tag_list)
             return {
                 ulElement,
                 categories,
+                categoryIndex,
                 videos,
                 menuClick,
                 videoClick,
