@@ -12,16 +12,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     let tag_list = await ipc.loadTagList()
     const categories = ref(tag_list)
     const videos = ref([])
+    /** @type {HTMLUListElement} */
     const ulElement = ref(null)
-    const categoryIndex=ref(-1)
+    const categoryIndex = ref(-1)
 
-    async function menuClick(index) {
-        const item=tag_list[index]
-        if (categoryIndex.value !== index) {
-            ulElement.value.scrollTop = 0
-        }
-        categoryIndex.value=index
-    
+    async function loadData() {
+        const item = tag_list[categoryIndex.value]
+
         try {
             /** @type {[]} */
             let list = await ipc.loadWallpaperData(item.tag_id, item.data.length)
@@ -33,6 +30,34 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
 
         videos.value = item.data
+    }
+
+    async function menuClick(index) {
+        if (categoryIndex.value !== index) {
+            ulElement.value.scrollTop = 0
+        }
+        categoryIndex.value = index
+
+        if (tag_list[index].data.length === 0) {
+            await loadData()
+        } else {
+            videos.value = tag_list[index].data
+        }
+    }
+
+    let flag = false
+    async function onscroll(e) {
+        if (flag) return
+
+        const clientHeight = e.target.clientHeight
+        const scrollTop = e.target.scrollTop
+        const scrollHeight = e.target.scrollHeight
+        if (clientHeight + scrollTop + 5 > scrollHeight) {
+            console.log('loaded')
+            flag = true
+            await loadData()
+            flag = false
+        }
     }
 
     let lastVideo
@@ -64,6 +89,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 categoryIndex,
                 videos,
                 menuClick,
+                onscroll,
                 videoClick,
                 videoMouseenter,
                 videoMouseLeave,
