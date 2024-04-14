@@ -9,12 +9,19 @@
 const { createApp, ref, toRaw, onMounted } = Vue
 
 window.addEventListener('DOMContentLoaded', async () => {
-    let tag_list = await ipc.loadTagList()
+    let tag_list = []
     const categories = ref(tag_list)
     const videos = ref([])
     /** @type {HTMLUListElement} */
     const ulElement = ref(null)
     const categoryIndex = ref(-1)
+
+    const _load=async()=>{
+        tag_list = await ipc.loadTagList()
+        categories.value = tag_list
+        await menuClick(0)
+    }
+    _load()
 
     async function loadData() {
         const item = tag_list[categoryIndex.value]
@@ -80,9 +87,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
     createApp({
         setup() {
-            onMounted(async () => {
-                await menuClick(0)
-            })
             return {
                 ulElement,
                 categories,
