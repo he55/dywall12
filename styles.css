@@ -32,6 +32,7 @@
 }
 .main{
     flex: 1;
+    padding: 15px;
     display: grid;
     gap: 20px;
     justify-content: space-evenly;
@@ -39,7 +40,7 @@
     overflow-y: auto;
 }
 .main> li{
-    width: 252px;
+    /* width: 252px; */
     height: 140px;
     overflow: hidden;
     border: 2px solid transparent;
