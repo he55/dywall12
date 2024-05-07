@@ -12,7 +12,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     let tag_list = []
     const categories = ref(tag_list)
     const videos = ref([])
-    /** @type {HTMLUListElement} */
+    /** @type {HTMLDivElement} */
     const ulElement = ref(null)
     const categoryIndex = ref(-1)
 

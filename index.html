@@ -1,26 +1,33 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"> -->
-    <link href="./styles.css" rel="stylesheet">
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <title>Hello World!</title>
-  </head>
-  <body>
-    <div class="container" id="app">
-      <ul class="left">
-        <li v-for="(category,index) in categories" :class="{active:categoryIndex===index}" @click="menuClick(index)">{{category.tag_name}}</li>
-      </ul>
-      <ul class="main" ref="ulElement" @scroll="onscroll">
-        <li v-for="video in videos" :class="{active:video.isActive}" @click="videoClick(video)" @mouseenter="videoMouseenter(video)" @mouseleave="videoMouseLeave(video)">
-          <video v-if="video.type===1&&video.isHover" :src="video.res" autoplay loop muted ></video>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"> -->
+  <link href="./styles.css" rel="stylesheet">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <title>Hello World!</title>
+</head>
+
+<body>
+  <div id="app">
+    <ul class="left">
+      <li v-for="(category,index) in categories" :class="{active:categoryIndex===index}" @click="menuClick(index)">
+        {{category.tag_name}}</li>
+    </ul>
+    <div class="grid" ref="ulElement" @scroll="onscroll">
+      <ul class="main">
+        <li v-for="video in videos" :class="{active:video.isActive}" @click="videoClick(video)"
+          @mouseenter="videoMouseenter(video)" @mouseleave="videoMouseLeave(video)">
+          <video v-if="video.type===1&&video.isHover" :src="video.res" autoplay loop muted></video>
           <img v-else :src="video.img" alt="">
         </li>
       </ul>
     </div>
-    <!-- You can also require other files to run in this process -->
-    <script src="./renderer.js"></script>
-  </body>
+  </div>
+  <!-- You can also require other files to run in this process -->
+  <script src="./renderer.js"></script>
+</body>
+
 </html>
